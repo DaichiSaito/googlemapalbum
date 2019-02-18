@@ -8,6 +8,7 @@
 </template>
 
 <script>
+import { firestore } from '@/firebase/init'
 export default {
   name: 'gmap',
   data() {
@@ -17,7 +18,7 @@ export default {
     }
   },
   methods: {
-    renderMap() {
+    renderMap(countryDocs) {
       const map = new google.maps.Map(document.getElementById('map'), {
         center: {lat: this.lat, lng: this.lng },
         zoom: 1,
@@ -26,11 +27,36 @@ export default {
         streetViewControl: false,
         mapTypeControl: false,
       })
+      countryDocs.forEach(coundryDoc => {
+        const country = coundryDoc.data()
+        const marker = new google.maps.Marker({
+              position: {
+                lat: country.lat,
+                lng: country.lon
+              },
+              map
+          })
+        if (country.hasImage) {
+          marker.setAnimation(google.maps.Animation.BOUNCE);
+        }
+        
+        marker.addListener('click', () => {
+            // this.$router.push({ name: 'CityIndex', params: { id: doc.id, name: doc.data().name_jps } })
+        })
+      })
+      
+    },
+    getCountries(callback) {
+      firestore.collection('countries').get().then((countries) => {
+        callback(countries)
+      })
     }
   },
 
   mounted() {
-    this.renderMap()
+    this.getCountries((countries) => {
+      this.renderMap(countries.docs)
+    })
   }
 }
 </script>
