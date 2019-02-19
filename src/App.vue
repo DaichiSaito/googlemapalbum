@@ -1,5 +1,6 @@
 <template>
   <v-app>
+    <Navbar/>
     <v-content>
       <v-container fluid fill-height>
         <v-fade-transition mode="out-in">
@@ -9,6 +10,17 @@
     </v-content>
   </v-app>
 </template>
+
+<script>
+import Navbar from "@/components/layout/Navbar";
+
+export default {
+  name: "App",
+  components: {
+    Navbar
+  }
+};
+</script>
 
 <style lang="scss">
 #app {
