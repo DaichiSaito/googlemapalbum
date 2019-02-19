@@ -36,3 +36,41 @@
     </v-menu>
   </v-toolbar>
 </template>
+
+<script>
+import { auth } from "@/firebase/init";
+export default {
+  data() {
+    return {
+      authButtonText: null,
+      authFunction: function() {},
+      isSignedIn: null
+    };
+  },
+  created() {
+    this.onAuthStateChanged();
+  },
+  methods: {
+    onAuthStateChanged() {
+      auth.onAuthStateChanged(user => {
+        console.log(user);
+        console.log("App.vueのonAuth");
+        this.authButtonText = user ? "ログアウト" : "ログイン";
+        this.authFunction = user ? this.signOut : this.signIn;
+        this.isSignedIn = user ? true : false;
+      });
+    },
+    signIn() {
+      const provider = new firebase.auth.GoogleAuthProvider();
+      auth.signInWithPopup(provider);
+    },
+    signOut() {
+      var result = window.confirm("ログアウトします");
+      if (result) {
+        auth.signOut();
+        this.$router.push("/");
+      }
+    }
+  }
+};
+</script>
