@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import GMap from './views/GMap.vue'
+import CountryDetail from './views/CountryDetail.vue'
 import Home from './views/Home.vue'
 
 Vue.use(Router)
@@ -13,6 +14,11 @@ export default new Router({
       path: '/',
       name: 'gmap',
       component: GMap
+    },
+    {
+      path: '/countries/:id',
+      name: 'countryDetail',
+      component: CountryDetail
     },
     {
       path: '/about',

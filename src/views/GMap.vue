@@ -27,8 +27,8 @@ export default {
         streetViewControl: false,
         mapTypeControl: false,
       })
-      countryDocs.forEach(coundryDoc => {
-        const country = coundryDoc.data()
+      countryDocs.forEach(countryDoc => {
+        const country = countryDoc.data()
         const marker = new google.maps.Marker({
               position: {
                 lat: country.lat,
@@ -41,7 +41,7 @@ export default {
         }
         
         marker.addListener('click', () => {
-            // this.$router.push({ name: 'CityIndex', params: { id: doc.id, name: doc.data().name_jps } })
+            this.$router.push({ name: 'countryDetail', params: { id: country.country_code } })
         })
       })
       
