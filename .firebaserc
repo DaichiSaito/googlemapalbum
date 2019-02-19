@@ -1,0 +1,6 @@
+{
+  "projects": {
+    "default": "worldalbum-65332",
+    "development": "worldalbum-dev"
+  }
+}

@@ -2,6 +2,7 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import GMap from './views/GMap.vue'
 import CountryDetail from './views/CountryDetail.vue'
+import ImageUploadModal from './components/ImageUploadModal.vue'
 import Home from './views/Home.vue'
 
 Vue.use(Router)
@@ -18,7 +19,15 @@ export default new Router({
     {
       path: '/countries/:id',
       name: 'countryDetail',
-      component: CountryDetail
+      component: CountryDetail,
+      children: [{
+        path: 'addDocument',
+        component: ImageUploadModal,
+        name: 'imageUploadModal',
+        meta: {
+          requiresAuth: true
+        }
+      }]
     },
     {
       path: '/about',
