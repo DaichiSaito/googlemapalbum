@@ -37,13 +37,20 @@
         </v-container>
       </v-card>
     </v-flex>
+    <v-flex xs12>
+      <LightBox :images="lightboximages" :showLightBox="false" :showCaption="true" ref="lightbox"></LightBox>
+    </v-flex>
   </v-layout>
 </template>
 
 <script>
 import { firestore } from '@/firebase/init'
+import LightBox from 'vue-image-lightbox'
 export default {
   name: 'countryDetail',
+  components: {
+    LightBox
+  },
   data () {
     return {
         country: null,
@@ -58,6 +65,15 @@ export default {
       }
       return this.images.filter(image => {
         return image.label == this.filter
+      })
+    },
+    lightboximages() {
+      return this.filteredImages.map(filteredImage => {
+        return {
+          thumb: filteredImage.thumbFileName,
+          src: filteredImage.fileName,
+          caption: filteredImage.label
+        }
       })
     }
   },
@@ -74,5 +90,10 @@ export default {
       
     })
   },
+  methods: {
+    openGallery(index) {
+      this.$refs.lightbox.showImage(index)
+    },
+  }
 }
 </script>
