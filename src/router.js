@@ -2,6 +2,7 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import GMap from './views/GMap.vue'
 import CountryDetail from './views/CountryDetail.vue'
+import Login from './views/Login.vue'
 import ImageUploadModal from './components/ImageUploadModal.vue'
 import Home from './views/Home.vue'
 
@@ -15,6 +16,11 @@ export default new Router({
       path: '/',
       name: 'gmap',
       component: GMap
+    },
+    {
+      path: '/login',
+      name: 'login',
+      component: Login
     },
     {
       path: '/countries/:id',

@@ -1,7 +1,7 @@
 <template>
   <v-toolbar dark color="primary" clipped-left fixed app>
     <v-toolbar-title class="white--text">
-      <router-link to="/" class="white--text">みんなで作る世界のアルバム</router-link>
+      <router-link to="/" class="white--text">みんアル</router-link>
     </v-toolbar-title>
     <v-spacer></v-spacer>
 
@@ -15,7 +15,7 @@
       <v-list>
         <v-list-tile v-if="!isSignedIn">
           <v-list-tile-title>
-            <router-link :to="{ name: 'Signup' }">ログイン</router-link>
+            <router-link :to="{ name: 'login' }">ログイン</router-link>
           </v-list-tile-title>
         </v-list-tile>
 
@@ -53,8 +53,6 @@ export default {
   methods: {
     onAuthStateChanged() {
       auth.onAuthStateChanged(user => {
-        console.log(user);
-        console.log("App.vueのonAuth");
         this.authButtonText = user ? "ログアウト" : "ログイン";
         this.authFunction = user ? this.signOut : this.signIn;
         this.isSignedIn = user ? true : false;
