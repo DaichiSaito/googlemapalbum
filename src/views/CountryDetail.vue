@@ -77,7 +77,7 @@ export default {
   mounted: function() {
     firestore
       .collection("countries")
-      .where("country_code", "==", "JP")
+      .where("country_code", "==", this.$route.params.id)
       .get()
       .then(countries => {
         countries.docs.forEach(doc => {
@@ -86,7 +86,7 @@ export default {
       });
     firestore
       .collection("images")
-      .where("country.country_code", "==", "JP")
+      .where("country.country_code", "==", this.$route.params.id)
       .get()
       .then(images => {
         this.images = images.docs.map(doc => {
