@@ -15,7 +15,7 @@ const os = require('os');
 const fs = require('fs');
 const sharp = require('sharp');
 
-const THUMB_MAX_SIZE = 200;
+const THUMB_MAX_SIZE = 500;
 const THUMB_PREFIX = 'thumb_';
 
 exports.generateThumbnail = functions.storage.object().onFinalize((object) => {

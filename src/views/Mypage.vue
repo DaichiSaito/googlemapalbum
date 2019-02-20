@@ -100,6 +100,9 @@ export default {
       this.$refs.lightbox.showImage(index);
     },
     deleteImage(image) {
+      if (this.loading) {
+        return;
+      }
       console.log(image.id);
       var result = window.confirm("削除します");
       if (!result) {
@@ -125,6 +128,7 @@ export default {
         })
         .then(() => {
           let ref = firestore.collection("images");
+          console.log(image.country.country_code);
           ref
             .where("country.country_code", "==", image.country.country_code)
             .limit(1)
