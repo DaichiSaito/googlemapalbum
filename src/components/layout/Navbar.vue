@@ -21,7 +21,7 @@
 
         <v-list-tile v-if="isSignedIn">
           <v-list-tile-title>
-            <router-link :to="{ name: 'Mypage' }">
+            <router-link :to="{ name: 'mypage' }">
               <span style="color: #000;">マイアルバム</span>
             </router-link>
           </v-list-tile-title>
@@ -53,6 +53,7 @@ export default {
   methods: {
     onAuthStateChanged() {
       auth.onAuthStateChanged(user => {
+        console.log(user);
         this.authButtonText = user ? "ログアウト" : "ログイン";
         this.authFunction = user ? this.signOut : this.signIn;
         this.isSignedIn = user ? true : false;
