@@ -5,11 +5,11 @@ import CountryDetail from './views/CountryDetail.vue'
 import Login from './views/Login.vue'
 import Mypage from './views/Mypage.vue'
 import ImageUploadModal from './components/ImageUploadModal.vue'
-import Home from './views/Home.vue'
+import { auth } from "@/firebase/init";
 
 Vue.use(Router)
 
-export default new Router({
+const router = new Router({
   mode: 'history',
   base: process.env.BASE_URL,
   routes: [
@@ -26,7 +26,10 @@ export default new Router({
     {
       path: '/mypage',
       name: 'mypage',
-      component: Mypage
+      component: Mypage,
+      meta: {
+        requiresAuth: true
+      }
     },
     {
       path: '/countries/:id',
@@ -41,13 +44,24 @@ export default new Router({
         }
       }]
     },
-    {
-      path: '/about',
-      name: 'about',
-      // route level code-splitting
-      // this generates a separate chunk (about.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
-      component: () => import(/* webpackChunkName: "about" */ './views/About.vue')
-    }
   ]
 })
+
+router.beforeEach((to, from, next) => {
+  // check to see if routes requires auth
+  if (to.matched.some(rec => rec.meta.requiresAuth)) {
+    // check auth state of user
+    let user = auth.currentUser
+    if (user) {
+      //user signed in, proceed to route
+      next()
+    } else {
+      // no user signed in, redirect to login
+      next({ name: 'login' })
+    }
+  } else {
+    next()
+  }
+})
+
+export default router
