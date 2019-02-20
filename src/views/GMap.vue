@@ -1,64 +1,68 @@
 <template>
   <div>
     <div class="map">
-      <div class="google-map" id="map">
-      </div>
+      <div class="google-map" id="map"></div>
     </div>
   </div>
 </template>
 
 <script>
-import { firestore } from '@/firebase/init'
+import { firestore } from "@/firebase/init";
 export default {
-  name: 'gmap',
+  name: "gmap",
   data() {
     return {
-        lat: 35.689,
-        lng: 139.691
-    }
+      lat: 35.689,
+      lng: 139.691
+    };
   },
   methods: {
     renderMap(countryDocs) {
-      const map = new google.maps.Map(document.getElementById('map'), {
-        center: {lat: this.lat, lng: this.lng },
+      const map = new google.maps.Map(document.getElementById("map"), {
+        center: { lat: this.lat, lng: this.lng },
         zoom: 1,
         maxZoom: 15,
-        minZoom: 3,
+        minZoom: 2,
         streetViewControl: false,
-        mapTypeControl: false,
-      })
+        mapTypeControl: false
+      });
       countryDocs.forEach(countryDoc => {
-        const country = countryDoc.data()
+        const country = countryDoc.data();
         const marker = new google.maps.Marker({
-              position: {
-                lat: country.lat,
-                lng: country.lon
-              },
-              map
-          })
+          position: {
+            lat: country.lat,
+            lng: country.lon
+          },
+          map
+        });
         if (country.hasImage) {
           marker.setAnimation(google.maps.Animation.BOUNCE);
         }
-        
-        marker.addListener('click', () => {
-            this.$router.push({ name: 'countryDetail', params: { id: country.country_code } })
-        })
-      })
-      
+
+        marker.addListener("click", () => {
+          this.$router.push({
+            name: "countryDetail",
+            params: { id: country.country_code }
+          });
+        });
+      });
     },
     getCountries(callback) {
-      firestore.collection('countries').get().then((countries) => {
-        callback(countries)
-      })
+      firestore
+        .collection("countries")
+        .get()
+        .then(countries => {
+          callback(countries);
+        });
     }
   },
 
   mounted() {
-    this.getCountries((countries) => {
-      this.renderMap(countries.docs)
-    })
+    this.getCountries(countries => {
+      this.renderMap(countries.docs);
+    });
   }
-}
+};
 </script>
 
 <style>
