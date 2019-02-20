@@ -1,6 +1,10 @@
 <template>
   <v-layout row wrap>
-    <v-flex v-if="filteredImages" xs12>
+    <v-flex xs12>
+      <h1 class="text-xs-center">マイページ</h1>
+      <p class="text-xs-center" v-if="feedback">{{feedback}}</p>
+    </v-flex>
+    <v-flex v-if="filteredImages.length > 0" xs12>
       <v-dialog v-model="loading" hide-overlay persistent width="300">
         <v-card color="primary" dark>
           <v-card-text>Please stand by
@@ -52,7 +56,8 @@ export default {
     return {
       images: [],
       filter: null,
-      loading: false
+      loading: false,
+      feedback: null
     };
   },
   computed: {
@@ -82,6 +87,9 @@ export default {
       .where("uid", "==", auth.currentUser.uid)
       .get()
       .then(images => {
+        if (images.docs.length == 0) {
+          this.feedback = `まだ投稿がありません。ぜひいろんな国の写真を投稿してください。`;
+        }
         this.images = images.docs.map(doc => {
           return Object.assign(doc.data(), { id: doc.id });
         });
