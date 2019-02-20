@@ -65,7 +65,7 @@
 
 
 <script>
-import { firestore, storage, auth } from "@/firebase/init";
+import { firestore, storage, auth, firestoreHelper } from "@/firebase/init";
 // import firebase from 'firebase'
 export default {
   name: "imageUploadModal",
@@ -183,7 +183,8 @@ export default {
           label: this.label,
           uid: auth.currentUser.uid,
           country: this.country,
-          filePath: `images/${fileName}`
+          filePath: `images/${fileName}`,
+          timestamp: firestoreHelper.FieldValue.serverTimestamp()
         };
         const promise = new Promise((resolve, reject) => {
           const imageRef = storage.ref().child(`images/${fileName}`);
