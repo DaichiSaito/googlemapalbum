@@ -179,11 +179,11 @@ export default {
         const extension = file.name.split(".").pop();
         const fileName = `${Date.now()}-${index}.${extension}`;
         const image = {
-          thumbFileName: null,
           fileName: fileName,
           label: this.label,
-          // uid: auth.currentUser.uid,
-          country: this.country
+          uid: auth.currentUser.uid,
+          country: this.country,
+          filePath: `images/${fileName}`
         };
         const promise = new Promise((resolve, reject) => {
           const imageRef = storage.ref().child(`images/${fileName}`);
