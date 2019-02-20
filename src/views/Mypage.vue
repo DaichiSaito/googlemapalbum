@@ -116,7 +116,25 @@ export default {
             .delete();
         })
         .then(() => {
-          this.loading = false;
+          let ref = firestore.collection("images");
+          ref
+            .where("country.country_code", "==", image.country.country_code)
+            .limit(1)
+            .get()
+            .then(images => {
+              if (images.docs.length == 0) {
+                console.log("0件");
+                return firestore
+                  .collection("countries")
+                  .doc(image.country.id)
+                  .set({ hasImage: false }, { merge: true });
+              } else {
+                return;
+              }
+            })
+            .then(() => {
+              this.loading = false;
+            });
         });
     }
   }
