@@ -53,7 +53,6 @@ export default {
   methods: {
     onAuthStateChanged() {
       auth.onAuthStateChanged(user => {
-        console.log(user);
         this.authButtonText = user ? "ログアウト" : "ログイン";
         this.authFunction = user ? this.signOut : this.signIn;
         this.isSignedIn = user ? true : false;
