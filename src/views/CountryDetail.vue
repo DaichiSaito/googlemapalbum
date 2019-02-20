@@ -7,6 +7,7 @@
     </router-link>
     <v-flex xs12>
       <h1 class="text-xs-center" v-if="country">{{country.name_jps}}</h1>
+      <p class="text-xs-center" v-if="feedback">{{feedback}}</p>
     </v-flex>
     <v-flex v-if="filteredImages.length > 0" xs12>
       <v-card>
@@ -50,7 +51,8 @@ export default {
     return {
       country: null,
       images: [],
-      filter: null
+      filter: null,
+      feedback: null
     };
   },
   computed: {
@@ -89,6 +91,11 @@ export default {
       .where("country.country_code", "==", this.$route.params.id)
       .get()
       .then(images => {
+        if (images.docs.length == 0) {
+          this.feedback = `投稿がありません。${
+            this.country.name_jps
+          }の写真をぜひ投稿してください！！`;
+        }
         this.images = images.docs.map(doc => {
           return Object.assign(doc.data(), { id: doc.id });
         });
