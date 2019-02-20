@@ -222,8 +222,15 @@ export default {
         images.forEach(image => {
           this.$parent.images.push(image);
         });
-        this.loading = false;
-        this.back();
+
+        firestore
+          .collection("countries")
+          .doc(this.country.id)
+          .set({ hasImage: true }, { merge: true })
+          .then(() => {
+            this.loading = false;
+            this.back();
+          });
       });
     }
   }
