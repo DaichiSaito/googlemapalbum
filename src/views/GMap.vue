@@ -27,7 +27,8 @@ export default {
         maxZoom: 15,
         minZoom: 2,
         streetViewControl: false,
-        mapTypeControl: false
+        mapTypeControl: false,
+        gestureHandling: "greedy"
       });
       countryDocs.forEach(countryDoc => {
         const country = countryDoc.data();
