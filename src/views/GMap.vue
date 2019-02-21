@@ -1,5 +1,8 @@
 <template>
   <div>
+    <div class="pin_description v-card v-sheet theme--light">
+      <p class="pin_description_text v-card__title mb-0">ピンが動いている ＝ 写真が投稿されている</p>
+    </div>
     <div class="map">
       <div class="google-map" id="map"></div>
     </div>
@@ -66,6 +69,24 @@ export default {
 </script>
 
 <style>
+.pin_description {
+  position: absolute !important;
+  z-index: 1;
+  left: 50%;
+  transform: translateX(-50%);
+  background: white;
+  top: 0;
+}
+
+.pin_description_text {
+  justify-content: center;
+}
+@media screen and (max-width: 767px) {
+  .pin_description {
+    font-size: 10px;
+    width: 80vw;
+  }
+}
 .google-map {
   width: 100%;
   height: 100%;
