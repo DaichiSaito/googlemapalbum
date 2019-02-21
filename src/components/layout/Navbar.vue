@@ -5,12 +5,20 @@
     </v-toolbar-title>
     <v-spacer></v-spacer>
 
-    <v-menu :nudge-width="100" bottom left>
-      <v-toolbar-title slot="activator">
-        <v-btn icon>
-          <v-icon>more_vert</v-icon>
-        </v-btn>
-      </v-toolbar-title>
+    <v-btn icon>
+      <a
+        href="https://docs.google.com/forms/d/1QVMxL4Vw7kFw752TR35DSOjsyrAC254mK-T3pzlTM14"
+        target="_blank"
+        class="white--text"
+      >
+        <v-icon>email</v-icon>
+      </a>
+    </v-btn>
+
+    <v-menu bottom left>
+      <v-btn slot="activator" dark icon>
+        <v-icon>more_vert</v-icon>
+      </v-btn>
 
       <v-list>
         <v-list-tile v-if="!isSignedIn">
