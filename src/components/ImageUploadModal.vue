@@ -195,7 +195,10 @@ export default {
               console.log("Document written with ID: ", doc.id);
               documentId = doc.id;
               image.id = doc.id;
-              return imageRef.put(file);
+              const metadata = {
+                cacheControl: "public,max-age=31536000"
+              };
+              return imageRef.put(file, metadata);
             })
             .then(() => {
               return imageRef.getDownloadURL();
