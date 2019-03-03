@@ -28,6 +28,7 @@
                     ref="fileInput"
                     @change="readImages"
                   >
+                  <canvas id="canvas" width="0" height="0"></canvas>
                 </v-flex>
 
                 <v-flex xs12>
@@ -66,7 +67,9 @@
 
 <script>
 import { firestore, storage, auth, firestoreHelper } from "@/firebase/init";
-// import firebase from 'firebase'
+import EXIF from "exif-js";
+const IMAGE_MAX_WIDTH = 1000; // 画像リサイズ後の横の長さの最大値
+const IMAGE_MAX_HEIGHT = 1000; // 画像リサイズ後の縦の長さの最大値
 export default {
   name: "imageUploadModal",
 
@@ -145,10 +148,34 @@ export default {
     readImages() {
       this.feedback = null;
       const files = event.target.files;
+      const promisess = [];
       Array.from(files).forEach((file, index, arr) => {
-        this.imageFiles.push(file);
+        const promise = new Promise((resolve, reject) => {
+          this.readFile(file)
+            .then(fileData => {
+              return this.fileToCanvas(fileData.src, fileData.orientation);
+            })
+            .then(canvas => {
+              return this.canvasToBlob(canvas);
+            })
+            .then(blob => {
+              resolve({
+                file: file,
+                blob: blob
+              });
+            });
+        });
+
+        promisess.push(promise);
       });
 
+      Promise.all(promisess).then(fileDatas => {
+        fileDatas.forEach(fileData => {
+          this.imageFiles.push(fileData);
+        });
+      });
+
+      // TODO こっちはプロミス使ってなくてそのまま処理が流れる。わかりづらい。
       if (files) {
         if (files.length > 0) {
           this.filename = [...files].map(file => file.name).join(", ");
@@ -159,6 +186,152 @@ export default {
       } else {
         this.filename = $event.target.value.split("\\").pop();
       }
+    },
+    canvasToBlob(canvas, type) {
+      return new Promise((resolve, reject) => {
+        if (!type) {
+          type = "image/jpeg";
+        }
+        if (canvas.toBlob) {
+          canvas.toBlob(
+            blob => {
+              resolve(blob);
+            },
+            type,
+            0.8
+          );
+        } else if (
+          canvas.toDataURL &&
+          window.Uint8Array &&
+          window.Blob &&
+          window.atob
+        ) {
+          var binStr = atob(canvas.toDataURL(type, 0.8).replace(/^[^,]*,/, "")),
+            len = binStr.length,
+            arr = new Uint8Array(len);
+
+          for (var i = 0; i < len; i++) {
+            arr[i] = binStr.charCodeAt(i);
+          }
+          resolve(new Blob([arr], { type: type }));
+        } else {
+          // TODO エラー処理
+        }
+      });
+    },
+    readFile(file) {
+      const reader = new FileReader();
+      return new Promise((resolve, reject) => {
+        reader.onload = function(e) {
+          EXIF.getData(file, function() {
+            var orientation = file.exifdata.Orientation;
+            resolve({
+              src: e.target.result,
+              orientation: orientation
+            });
+          });
+        };
+        reader.readAsDataURL(file);
+      });
+    },
+    fileToCanvas(src, orientation) {
+      console.log(orientation);
+      const image = new Image();
+      var image_aspect, draw_width, draw_height, canvas_width, canvas_height;
+      return new Promise((resolve, reject) => {
+        image.onload = function() {
+          //アスペクト取得
+          image_aspect =
+            orientation == 5 ||
+            orientation == 6 ||
+            orientation == 7 ||
+            orientation == 8
+              ? image.width / image.height
+              : image.height / image.width;
+
+          canvas_width = image.width;
+          canvas_height = Math.floor(canvas_width * image_aspect);
+
+          // TODO この辺り意味不明なロジックになってる...
+          if (canvas_width > canvas_height) {
+            // console.log("横がでかい");
+            canvas_width = IMAGE_MAX_WIDTH;
+            // TODO image_aspectをかけるってのもまじ意味不明。だけどこうしないとうまくcanvasに描画されない...
+            canvas_height = IMAGE_MAX_WIDTH * image_aspect;
+          } else {
+            // console.log("縦がでかい");
+            canvas_width = (IMAGE_MAX_HEIGHT * canvas_width) / canvas_height;
+            canvas_height = IMAGE_MAX_HEIGHT;
+          }
+
+          var canvas = document.createElement("canvas");
+          var context = canvas.getContext("2d");
+          canvas.width = canvas_width;
+          canvas.height = canvas_height;
+
+          draw_width = canvas_width;
+          draw_height = canvas_height;
+
+          switch (orientation) {
+            case 2:
+              context.transform(-1, 0, 0, 1, canvas.width, 0);
+              break;
+
+            case 3:
+              context.transform(-1, 0, 0, -1, canvas.width, canvas.height);
+              break;
+
+            case 4:
+              context.transform(1, 0, 0, -1, 0, canvas.height);
+              break;
+
+            case 5:
+              context.transform(-1, 0, 0, 1, 0, 0);
+              context.rotate((90 * Math.PI) / 180);
+              draw_width = canvas.height;
+              draw_height = canvas.width;
+              break;
+
+            case 6:
+              context.transform(1, 0, 0, 1, canvas.width, 0);
+              context.rotate((90 * Math.PI) / 180);
+              draw_width = canvas.height;
+              draw_height = canvas.width;
+              break;
+
+            case 7:
+              context.transform(-1, 0, 0, 1, canvas.width, canvas.height);
+              context.rotate((-90 * Math.PI) / 180);
+              draw_width = canvas.height;
+              draw_height = canvas.width;
+              break;
+
+            case 8:
+              context.transform(1, 0, 0, 1, 0, canvas.height);
+              context.rotate((-90 * Math.PI) / 180);
+              draw_width = canvas.height;
+              draw_height = canvas.width;
+              break;
+
+            default:
+              break;
+          }
+
+          context.drawImage(image, 0, 0, draw_width, draw_height);
+
+          resolve(canvas);
+        };
+        image.src = src;
+      });
+    },
+    convertFileToBlob(file) {
+      readFile(file)
+        .then(src => {
+          return fileToCanvas(src);
+        })
+        .then(canvas => {
+          return canvasToBlob(canvas);
+        });
     },
 
     back() {
@@ -175,8 +348,8 @@ export default {
     uploadImage() {
       const promisess = [];
       let ref = firestore.collection("images");
-      this.imageFiles.forEach((file, index, arr) => {
-        const extension = file.name.split(".").pop();
+      this.imageFiles.forEach((fileData, index, arr) => {
+        const extension = fileData.file.name.split(".").pop();
         const fileName = `${Date.now()}-${index}.${extension}`;
         const image = {
           fileName: fileName,
@@ -198,7 +371,7 @@ export default {
               const metadata = {
                 cacheControl: "public,max-age=31536000"
               };
-              return imageRef.put(file, metadata);
+              return imageRef.put(fileData.blob, metadata);
             })
             .then(() => {
               return imageRef.getDownloadURL();
