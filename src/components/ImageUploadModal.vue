@@ -402,7 +402,13 @@ export default {
         firestore
           .collection("countries")
           .doc(this.country.id)
-          .set({ hasImage: true }, { merge: true })
+          .set(
+            {
+              hasImage: true,
+              updated_at: firestoreHelper.FieldValue.serverTimestamp()
+            },
+            { merge: true }
+          )
           .then(() => {
             this.loading = false;
             this.back();

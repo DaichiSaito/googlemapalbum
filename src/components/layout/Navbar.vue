@@ -5,9 +5,9 @@
     </v-toolbar-title>
     <v-spacer></v-spacer>
 
-    <!-- <v-btn icon>
+    <v-btn icon>
       <v-icon>timeline</v-icon>
-    </v-btn>-->
+    </v-btn>
     <v-btn icon>
       <a
         href="https://docs.google.com/forms/d/1QVMxL4Vw7kFw752TR35DSOjsyrAC254mK-T3pzlTM14"
