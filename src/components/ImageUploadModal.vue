@@ -28,6 +28,7 @@
                     ref="fileInput"
                     @change="readImages"
                   >
+                  <canvas id="canvas" width="0" height="0"></canvas>
                 </v-flex>
 
                 <v-flex xs12>
@@ -66,7 +67,8 @@
 
 <script>
 import { firestore, storage, auth, firestoreHelper } from "@/firebase/init";
-// import firebase from 'firebase'
+const IMAGE_MAX_WIDTH = 1000; // 画像リサイズ後の横の長さの最大値
+const IMAGE_MAX_HEIGHT = 1000; // 画像リサイズ後の縦の長さの最大値
 export default {
   name: "imageUploadModal",
 
@@ -145,10 +147,34 @@ export default {
     readImages() {
       this.feedback = null;
       const files = event.target.files;
+      const promisess = [];
       Array.from(files).forEach((file, index, arr) => {
-        this.imageFiles.push(file);
+        const promise = new Promise((resolve, reject) => {
+          this.readFile(file)
+            .then(src => {
+              return this.fileToCanvas(src);
+            })
+            .then(canvas => {
+              return this.canvasToBlob(canvas);
+            })
+            .then(blob => {
+              resolve({
+                file: file,
+                blob: blob
+              });
+            });
+        });
+
+        promisess.push(promise);
       });
 
+      Promise.all(promisess).then(fileDatas => {
+        fileDatas.forEach(fileData => {
+          this.imageFiles.push(fileData);
+        });
+      });
+
+      // TODO こっちはプロミス使ってなくてそのまま処理が流れる。わかりづらい。
       if (files) {
         if (files.length > 0) {
           this.filename = [...files].map(file => file.name).join(", ");
@@ -159,6 +185,94 @@ export default {
       } else {
         this.filename = $event.target.value.split("\\").pop();
       }
+    },
+    canvasToBlob(canvas, type) {
+      return new Promise((resolve, reject) => {
+        if (!type) {
+          type = "image/jpeg";
+        }
+        if (canvas.toBlob) {
+          canvas.toBlob(
+            blob => {
+              resolve(blob);
+            },
+            type,
+            0.8
+          );
+        } else if (
+          canvas.toDataURL &&
+          window.Uint8Array &&
+          window.Blob &&
+          window.atob
+        ) {
+          var binStr = atob(canvas.toDataURL(type, 0.8).replace(/^[^,]*,/, "")),
+            len = binStr.length,
+            arr = new Uint8Array(len);
+
+          for (var i = 0; i < len; i++) {
+            arr[i] = binStr.charCodeAt(i);
+          }
+          resolve(new Blob([arr], { type: type }));
+        } else {
+          // TODO エラー処理
+        }
+      });
+    },
+    readFile(file) {
+      const reader = new FileReader();
+      return new Promise((resolve, reject) => {
+        reader.onload = function(e) {
+          resolve(e.target.result);
+        };
+        reader.readAsDataURL(file);
+      });
+    },
+    fileToCanvas(src) {
+      const image = new Image();
+      return new Promise((resolve, reject) => {
+        image.onload = function() {
+          var width, height;
+          if (image.width > image.height) {
+            // 横長の画像は横のサイズを指定値にあわせる
+            var ratio = image.height / image.width;
+            width = IMAGE_MAX_WIDTH;
+            height = IMAGE_MAX_WIDTH * ratio;
+          } else {
+            // 縦長の画像は縦のサイズを指定値にあわせる
+            var ratio = image.width / image.height;
+            width = IMAGE_MAX_HEIGHT * ratio;
+            height = IMAGE_MAX_HEIGHT;
+          }
+
+          var canvas = document.createElement("canvas");
+          var context = canvas.getContext("2d");
+          canvas.width = width;
+          canvas.height = height;
+          context.drawImage(
+            image,
+            0,
+            0,
+            image.width,
+            image.height,
+            0,
+            0,
+            width,
+            height
+          );
+
+          resolve(canvas);
+        };
+        image.src = src;
+      });
+    },
+    convertFileToBlob(file) {
+      readFile(file)
+        .then(src => {
+          return fileToCanvas(src);
+        })
+        .then(canvas => {
+          return canvasToBlob(canvas);
+        });
     },
 
     back() {
@@ -175,8 +289,8 @@ export default {
     uploadImage() {
       const promisess = [];
       let ref = firestore.collection("images");
-      this.imageFiles.forEach((file, index, arr) => {
-        const extension = file.name.split(".").pop();
+      this.imageFiles.forEach((fileData, index, arr) => {
+        const extension = fileData.file.name.split(".").pop();
         const fileName = `${Date.now()}-${index}.${extension}`;
         const image = {
           fileName: fileName,
@@ -198,7 +312,7 @@ export default {
               const metadata = {
                 cacheControl: "public,max-age=31536000"
               };
-              return imageRef.put(file, metadata);
+              return imageRef.put(fileData.blob, metadata);
             })
             .then(() => {
               return imageRef.getDownloadURL();
