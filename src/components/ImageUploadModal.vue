@@ -67,6 +67,7 @@
 
 <script>
 import { firestore, storage, auth, firestoreHelper } from "@/firebase/init";
+import EXIF from "exif-js";
 const IMAGE_MAX_WIDTH = 1000; // 画像リサイズ後の横の長さの最大値
 const IMAGE_MAX_HEIGHT = 1000; // 画像リサイズ後の縦の長さの最大値
 export default {
@@ -151,8 +152,8 @@ export default {
       Array.from(files).forEach((file, index, arr) => {
         const promise = new Promise((resolve, reject) => {
           this.readFile(file)
-            .then(src => {
-              return this.fileToCanvas(src);
+            .then(fileData => {
+              return this.fileToCanvas(fileData.src, fileData.orientation);
             })
             .then(canvas => {
               return this.canvasToBlob(canvas);
@@ -222,43 +223,120 @@ export default {
       const reader = new FileReader();
       return new Promise((resolve, reject) => {
         reader.onload = function(e) {
-          resolve(e.target.result);
+          EXIF.getData(file, function() {
+            var orientation = file.exifdata.Orientation;
+            resolve({
+              src: e.target.result,
+              orientation: orientation
+            });
+          });
         };
         reader.readAsDataURL(file);
       });
     },
-    fileToCanvas(src) {
+    fileToCanvas(src, orientation) {
+      console.log(orientation);
       const image = new Image();
+      var image_aspect, draw_width, draw_height, canvas_width, canvas_height;
       return new Promise((resolve, reject) => {
         image.onload = function() {
-          var width, height;
-          if (image.width > image.height) {
-            // 横長の画像は横のサイズを指定値にあわせる
-            var ratio = image.height / image.width;
-            width = IMAGE_MAX_WIDTH;
-            height = IMAGE_MAX_WIDTH * ratio;
+          //アスペクト取得
+          image_aspect =
+            orientation == 5 ||
+            orientation == 6 ||
+            orientation == 7 ||
+            orientation == 8
+              ? image.width / image.height
+              : image.height / image.width;
+          // var width, height;
+          // if (image.width > image.height) {
+          //   // 横長の画像は横のサイズを指定値にあわせる
+          //   var ratio = image.height / image.width;
+          //   width = IMAGE_MAX_WIDTH;
+          //   height = IMAGE_MAX_WIDTH * ratio;
+          // } else {
+          //   // 縦長の画像は縦のサイズを指定値にあわせる
+          //   var ratio = image.width / image.height;
+          //   width = IMAGE_MAX_HEIGHT * ratio;
+          //   height = IMAGE_MAX_HEIGHT;
+          // }
+
+          // if (image.width > image.height) {
+          //   var ratio = image.height / image.width;
+          //   canvas_width = IMAGE_MAX_WIDTH;
+          //   canvas_height = IMAGE_MAX_WIDTH * ratio;
+          // } else {
+          //   var ratio = image.width / image.height;
+          //   canvas_width = IMAGE_MAX_HEIGHT * ratio;
+          //   canvas_height = IMAGE_MAX_HEIGHT;
+          // }
+          canvas_width = image.width;
+          canvas_height = Math.floor(canvas_width * image_aspect);
+
+          if (canvas_width > canvas_height) {
+            // console.log("横がでかい");
+            canvas_width = IMAGE_MAX_WIDTH;
+            canvas_height = IMAGE_MAX_WIDTH * image_aspect;
           } else {
-            // 縦長の画像は縦のサイズを指定値にあわせる
-            var ratio = image.width / image.height;
-            width = IMAGE_MAX_HEIGHT * ratio;
-            height = IMAGE_MAX_HEIGHT;
+            // console.log("縦がでかい");
+            canvas_width = (IMAGE_MAX_HEIGHT * canvas_width) / canvas_height;
+            canvas_height = IMAGE_MAX_HEIGHT;
           }
 
           var canvas = document.createElement("canvas");
           var context = canvas.getContext("2d");
-          canvas.width = width;
-          canvas.height = height;
-          context.drawImage(
-            image,
-            0,
-            0,
-            image.width,
-            image.height,
-            0,
-            0,
-            width,
-            height
-          );
+          canvas.width = canvas_width;
+          canvas.height = canvas_height;
+
+          draw_width = canvas_width;
+          draw_height = canvas_height;
+
+          switch (orientation) {
+            case 2:
+              context.transform(-1, 0, 0, 1, canvas.width, 0);
+              break;
+
+            case 3:
+              context.transform(-1, 0, 0, -1, canvas.width, canvas.height);
+              break;
+
+            case 4:
+              context.transform(1, 0, 0, -1, 0, canvas.height);
+              break;
+
+            case 5:
+              context.transform(-1, 0, 0, 1, 0, 0);
+              context.rotate((90 * Math.PI) / 180);
+              draw_width = canvas.height;
+              draw_height = canvas.width;
+              break;
+
+            case 6:
+              context.transform(1, 0, 0, 1, canvas.width, 0);
+              context.rotate((90 * Math.PI) / 180);
+              draw_width = canvas.height;
+              draw_height = canvas.width;
+              break;
+
+            case 7:
+              context.transform(-1, 0, 0, 1, canvas.width, canvas.height);
+              context.rotate((-90 * Math.PI) / 180);
+              draw_width = canvas.height;
+              draw_height = canvas.width;
+              break;
+
+            case 8:
+              context.transform(1, 0, 0, 1, 0, canvas.height);
+              context.rotate((-90 * Math.PI) / 180);
+              draw_width = canvas.height;
+              draw_height = canvas.width;
+              break;
+
+            default:
+              break;
+          }
+
+          context.drawImage(image, 0, 0, draw_width, draw_height);
 
           resolve(canvas);
         };
