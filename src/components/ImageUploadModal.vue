@@ -248,34 +248,15 @@ export default {
             orientation == 8
               ? image.width / image.height
               : image.height / image.width;
-          // var width, height;
-          // if (image.width > image.height) {
-          //   // 横長の画像は横のサイズを指定値にあわせる
-          //   var ratio = image.height / image.width;
-          //   width = IMAGE_MAX_WIDTH;
-          //   height = IMAGE_MAX_WIDTH * ratio;
-          // } else {
-          //   // 縦長の画像は縦のサイズを指定値にあわせる
-          //   var ratio = image.width / image.height;
-          //   width = IMAGE_MAX_HEIGHT * ratio;
-          //   height = IMAGE_MAX_HEIGHT;
-          // }
 
-          // if (image.width > image.height) {
-          //   var ratio = image.height / image.width;
-          //   canvas_width = IMAGE_MAX_WIDTH;
-          //   canvas_height = IMAGE_MAX_WIDTH * ratio;
-          // } else {
-          //   var ratio = image.width / image.height;
-          //   canvas_width = IMAGE_MAX_HEIGHT * ratio;
-          //   canvas_height = IMAGE_MAX_HEIGHT;
-          // }
           canvas_width = image.width;
           canvas_height = Math.floor(canvas_width * image_aspect);
 
+          // TODO この辺り意味不明なロジックになってる...
           if (canvas_width > canvas_height) {
             // console.log("横がでかい");
             canvas_width = IMAGE_MAX_WIDTH;
+            // TODO image_aspectをかけるってのもまじ意味不明。だけどこうしないとうまくcanvasに描画されない...
             canvas_height = IMAGE_MAX_WIDTH * image_aspect;
           } else {
             // console.log("縦がでかい");
