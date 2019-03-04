@@ -5,6 +5,16 @@
     </v-toolbar-title>
     <v-spacer></v-spacer>
 
+    <v-btn icon>
+      <a
+        href="https://docs.google.com/forms/d/1QVMxL4Vw7kFw752TR35DSOjsyrAC254mK-T3pzlTM14"
+        target="_blank"
+        class="white--text"
+      >
+        <v-icon>email</v-icon>
+      </a>
+    </v-btn>
+
     <v-menu bottom left>
       <v-btn slot="activator" dark icon>
         <v-icon>timeline</v-icon>
@@ -27,16 +37,6 @@
         </v-list-tile>
       </v-list>
     </v-menu>
-    <v-btn icon>
-      <a
-        href="https://docs.google.com/forms/d/1QVMxL4Vw7kFw752TR35DSOjsyrAC254mK-T3pzlTM14"
-        target="_blank"
-        class="white--text"
-      >
-        <v-icon>email</v-icon>
-      </a>
-    </v-btn>
-
     <v-menu bottom left>
       <v-btn slot="activator" dark icon>
         <v-icon>more_vert</v-icon>
