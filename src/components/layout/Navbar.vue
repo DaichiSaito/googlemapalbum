@@ -45,7 +45,9 @@
       <v-list>
         <v-list-tile v-if="!isSignedIn">
           <v-list-tile-title>
-            <router-link :to="{ name: 'login' }">ログイン</router-link>
+            <router-link :to="{ name: 'login' }">
+              <span style="color: #000;">ログイン</span>
+            </router-link>
           </v-list-tile-title>
         </v-list-tile>
 
