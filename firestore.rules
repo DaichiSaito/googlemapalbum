@@ -10,5 +10,10 @@ service cloud.firestore {
       allow create;
       allow update, delete: if request.auth.uid == resource.data.uid;
     }
+
+    match /imagePosts/{imagePost} {
+      allow read;
+      allow create;
+    }
   }
 }

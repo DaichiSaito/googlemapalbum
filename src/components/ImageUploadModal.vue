@@ -235,7 +235,7 @@ export default {
       });
     },
     fileToCanvas(src, orientation) {
-      console.log(orientation);
+      // console.log(orientation);
       const image = new Image();
       var image_aspect, draw_width, draw_height, canvas_width, canvas_height;
       return new Promise((resolve, reject) => {
@@ -386,7 +386,7 @@ export default {
               );
             })
             .then(() => {
-              console.log(image);
+              // console.log(image);
               resolve(image);
             });
         });
@@ -402,7 +402,20 @@ export default {
         firestore
           .collection("countries")
           .doc(this.country.id)
-          .set({ hasImage: true }, { merge: true })
+          .set(
+            {
+              hasImage: true,
+              updated_at: firestoreHelper.FieldValue.serverTimestamp()
+            },
+            { merge: true }
+          )
+          .then(() => {
+            firestore.collection("imagePosts").add({
+              country: this.country,
+              created_at: firestoreHelper.FieldValue.serverTimestamp(),
+              uid: auth.currentUser.uid
+            });
+          })
           .then(() => {
             this.loading = false;
             this.back();

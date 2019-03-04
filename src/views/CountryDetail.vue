@@ -77,33 +77,47 @@ export default {
     }
   },
   mounted: function() {
-    firestore
-      .collection("countries")
-      .where("country_code", "==", this.$route.params.id)
-      .get()
-      .then(countries => {
-        countries.docs.forEach(doc => {
-          this.country = Object.assign(doc.data(), { id: doc.id });
-        });
-      });
-    firestore
-      .collection("images")
-      .where("country.country_code", "==", this.$route.params.id)
-      .get()
-      .then(images => {
-        if (images.docs.length == 0) {
-          this.feedback = `投稿がありません。${
-            this.country.name_jps
-          }の写真をぜひ投稿してください！！`;
-        }
-        this.images = images.docs.map(doc => {
-          return Object.assign(doc.data(), { id: doc.id });
-        });
-      });
+    this.getCountry();
+    this.getImages();
   },
   methods: {
+    getCountry() {
+      firestore
+        .collection("countries")
+        .where("country_code", "==", this.$route.params.id)
+        .get()
+        .then(countries => {
+          countries.docs.forEach(doc => {
+            this.country = Object.assign(doc.data(), { id: doc.id });
+          });
+        });
+    },
+    getImages() {
+      firestore
+        .collection("images")
+        .where("country.country_code", "==", this.$route.params.id)
+        .get()
+        .then(images => {
+          if (images.docs.length == 0) {
+            this.feedback = `投稿がありません。${
+              this.country.name_jps
+            }の写真をぜひ投稿してください！！`;
+          }
+          this.images = images.docs.map(doc => {
+            return Object.assign(doc.data(), { id: doc.id });
+          });
+        });
+    },
     openGallery(index) {
       this.$refs.lightbox.showImage(index);
+    }
+  },
+  // 動的ルーティングの際にページを再描画するために必要
+  // https://atuweb.net/201707_vue-router-dmatching-reuse-component/
+  watch: {
+    $route(to, from) {
+      this.getCountry();
+      this.getImages();
     }
   }
 };
