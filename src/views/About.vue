@@ -1,5 +1,5 @@
 <template>
-  <div class="about">
+  <div class="about container">
     <h1>このサービスについて</h1>
     <p>みんなで作る世界のアルバム</p>
     <p>
@@ -53,18 +53,33 @@
         <img src="../assets/step3.jpg">
       </v-flex>
     </v-layout>
-    <v-layout align-center pb-5>
+    <v-layout justify-center pb-5>
       <router-link :to="{ name: 'gmap' }">
         <v-btn color="info">さっそく写真を見てみる</v-btn>
       </router-link>
     </v-layout>
   </div>
 </template>
+<script>
+export default {
+  name: "about",
+  metaInfo: {
+    title: "このサービスについて",
+    meta: [
+      {
+        name: "description",
+        content:
+          "みんなで作る世界のアルバム。略して 『みんアル』。みんな（匿名）で世界中の写真をアップして一つのアルバムを作ろう。"
+      }
+    ]
+  }
+};
+</script>
 <style scoped>
 .about {
   text-align: left;
   width: 100%;
-  background: white;
+  background-color: white;
 }
 img {
   max-width: 100%;

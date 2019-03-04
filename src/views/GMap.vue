@@ -19,6 +19,16 @@ export default {
       lng: 139.691
     };
   },
+  metaInfo: {
+    title: "マップ",
+    meta: [
+      {
+        name: "description",
+        content:
+          "みんなで作る世界のアルバム。略して 『みんアル』。みんな（匿名）で世界中の写真をアップして一つのアルバムを作ろう。"
+      }
+    ]
+  },
   methods: {
     renderMap(countryDocs) {
       const map = new google.maps.Map(document.getElementById("map"), {

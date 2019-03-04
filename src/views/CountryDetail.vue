@@ -44,6 +44,18 @@ import { firestore } from "@/firebase/init";
 import LightBox from "vue-image-lightbox";
 export default {
   name: "countryDetail",
+  metaInfo() {
+    return {
+      title: this.country ? `${this.country.name_jps}のアルバム` : "Loading...",
+      meta: [
+        {
+          vmid: "description",
+          name: "description",
+          content: this.description
+        }
+      ]
+    };
+  },
   components: {
     LightBox
   },
@@ -74,6 +86,15 @@ export default {
           caption: filteredImage.label
         };
       });
+    },
+    description() {
+      if (this.country) {
+        return `${this.country.name_jps}のアルバムページです。${
+          this.country.name_jps
+        }の写真を投稿してみんなで世界のアルバムを作り上げましょう。`;
+      } else {
+        return `Loading...`;
+      }
     }
   },
   mounted: function() {
