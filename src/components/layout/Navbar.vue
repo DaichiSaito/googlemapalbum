@@ -24,7 +24,7 @@
         <v-list-tile>
           <v-list-tile-title>最新の投稿</v-list-tile-title>
         </v-list-tile>
-        <v-list-tile v-for="(imagePost, index) in recentPosts" :key="imagePost.id">
+        <v-list-tile v-for="(imagePost) in recentPosts" :key="imagePost.id">
           <v-list-tile-title>
             <router-link
               class="recentPostText"
