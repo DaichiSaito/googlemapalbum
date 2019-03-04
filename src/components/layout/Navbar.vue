@@ -24,7 +24,7 @@
         <v-list-tile>
           <v-list-tile-title>最新の投稿</v-list-tile-title>
         </v-list-tile>
-        <v-list-tile v-for="(imagePost, index) in recentPosts" :key="imagePost.id">
+        <v-list-tile v-for="(imagePost) in recentPosts" :key="imagePost.id">
           <v-list-tile-title>
             <router-link
               class="recentPostText"
@@ -45,7 +45,9 @@
       <v-list>
         <v-list-tile v-if="!isSignedIn">
           <v-list-tile-title>
-            <router-link :to="{ name: 'login' }">ログイン</router-link>
+            <router-link :to="{ name: 'login' }">
+              <span style="color: #000;">ログイン</span>
+            </router-link>
           </v-list-tile-title>
         </v-list-tile>
 
@@ -53,6 +55,14 @@
           <v-list-tile-title>
             <router-link :to="{ name: 'mypage' }">
               <span style="color: #000;">マイアルバム</span>
+            </router-link>
+          </v-list-tile-title>
+        </v-list-tile>
+
+        <v-list-tile>
+          <v-list-tile-title>
+            <router-link :to="{ name: 'about' }">
+              <span style="color: #000;">このサービスについて</span>
             </router-link>
           </v-list-tile-title>
         </v-list-tile>
