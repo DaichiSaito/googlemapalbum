@@ -2,7 +2,7 @@
   <v-app>
     <Navbar/>
     <v-content>
-      <v-container fluid fill-height>
+      <v-container fill-height>
         <v-fade-transition mode="out-in">
           <router-view></router-view>
         </v-fade-transition>
