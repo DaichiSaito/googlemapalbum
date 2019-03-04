@@ -17,8 +17,8 @@ import Navbar from "@/components/layout/Navbar";
 export default {
   name: "App",
   metaInfo: {
-    title: "みんなのALBUM",
-    titleTemplate: "%s | みんなのALBUM"
+    title: "みんなのALBUM みんアル",
+    titleTemplate: "%s | みんなのALBUM みんアル"
   },
   components: {
     Navbar

@@ -15,7 +15,10 @@ export default {
   metaInfo: {
     title: "ログイン",
     meta: [
-      { name: "description", content: "みんなのALBUMのログインページです。" }
+      {
+        name: "description",
+        content: "みんなのALBUM みんアルのログインページです。"
+      }
     ]
   },
 
