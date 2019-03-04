@@ -98,6 +98,7 @@ export default {
       var result = window.confirm("ログアウトします");
       if (result) {
         auth.signOut();
+        alert("ログアウトしました。");
         this.$router.push("/");
       }
     },
