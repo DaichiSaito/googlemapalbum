@@ -102,6 +102,8 @@ export default {
             this.feedback = `投稿がありません。${
               this.country.name_jps
             }の写真をぜひ投稿してください！！`;
+          } else {
+            this.feedback = "";
           }
           this.images = images.docs.map(doc => {
             return Object.assign(doc.data(), { id: doc.id });
