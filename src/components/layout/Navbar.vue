@@ -116,14 +116,14 @@ export default {
       this.recentPosts = [];
       firestore
         .collection("imagePosts")
-        .orderBy("created_at")
+        .orderBy("created_at", "desc")
         .limit(10)
         .get()
         .then(imagePosts => {
           imagePosts.docs.forEach(doc => {
             // TODO ビューの中で{{this.formatDate(data, 'yyyy/MM/dd')}}みたいに書くとエラーが出たので仕方なくここで変換してる
             if (doc.data().created_at) {
-              this.recentPosts.unshift(
+              this.recentPosts.push(
                 Object.assign(doc.data(), {
                   id: doc.id,
                   created_at: this.formatDate(
