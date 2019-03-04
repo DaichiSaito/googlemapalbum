@@ -198,7 +198,7 @@ export default {
               resolve(blob);
             },
             type,
-            0.9
+            1.0
           );
         } else if (
           canvas.toDataURL &&
@@ -206,7 +206,7 @@ export default {
           window.Blob &&
           window.atob
         ) {
-          var binStr = atob(canvas.toDataURL(type, 0.9).replace(/^[^,]*,/, "")),
+          var binStr = atob(canvas.toDataURL(type, 1.0).replace(/^[^,]*,/, "")),
             len = binStr.length,
             arr = new Uint8Array(len);
 
