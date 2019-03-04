@@ -57,6 +57,14 @@
           </v-list-tile-title>
         </v-list-tile>
 
+        <v-list-tile>
+          <v-list-tile-title>
+            <router-link :to="{ name: 'about' }">
+              <span style="color: #000;">このサービスについて</span>
+            </router-link>
+          </v-list-tile-title>
+        </v-list-tile>
+
         <v-list-tile v-if="isSignedIn">
           <v-list-tile-title @click="signOut">
             <span style="cursor: pointer;">ログアウト</span>

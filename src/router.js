@@ -5,6 +5,7 @@ import CountryDetail from './views/CountryDetail.vue'
 import Login from './views/Login.vue'
 import Mypage from './views/Mypage.vue'
 import ImageUploadModal from './components/ImageUploadModal.vue'
+import About from './views/About.vue'
 import { auth } from "@/firebase/init";
 
 Vue.use(Router)
@@ -17,6 +18,11 @@ const router = new Router({
       path: '/',
       name: 'gmap',
       component: GMap
+    },
+    {
+      path: '/about',
+      name: 'about',
+      component: About
     },
     {
       path: '/login',
