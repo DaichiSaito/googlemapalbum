@@ -7,8 +7,10 @@ import Mypage from './views/Mypage.vue'
 import ImageUploadModal from './components/ImageUploadModal.vue'
 import About from './views/About.vue'
 import { auth } from "@/firebase/init";
+import Meta from 'vue-meta'
 
 Vue.use(Router)
+Vue.use(Meta)
 
 const router = new Router({
   mode: 'history',

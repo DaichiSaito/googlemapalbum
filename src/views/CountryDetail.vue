@@ -5,8 +5,8 @@
         <v-icon>add</v-icon>
       </v-btn>
     </router-link>
-    <v-flex xs12>
-      <h1 class="text-xs-center" v-if="country">{{country.name_jps}}</h1>
+    <v-flex xs12 pa-3>
+      <h1 class="text-xs-center" v-if="country">{{country.name_jps}}のアルバム</h1>
       <p class="text-xs-center" v-if="feedback">{{feedback}}</p>
     </v-flex>
     <v-flex v-if="filteredImages.length > 0" xs12>
@@ -44,6 +44,18 @@ import { firestore } from "@/firebase/init";
 import LightBox from "vue-image-lightbox";
 export default {
   name: "countryDetail",
+  metaInfo() {
+    return {
+      title: this.country ? `${this.country.name_jps}のアルバム` : "Loading...",
+      meta: [
+        {
+          vmid: "description",
+          name: "description",
+          content: this.description
+        }
+      ]
+    };
+  },
   components: {
     LightBox
   },
@@ -74,6 +86,15 @@ export default {
           caption: filteredImage.label
         };
       });
+    },
+    description() {
+      if (this.country) {
+        return `${this.country.name_jps}のアルバムページです。${
+          this.country.name_jps
+        }の写真を投稿してみんなで世界のアルバムを作り上げましょう。`;
+      } else {
+        return `Loading...`;
+      }
     }
   },
   mounted: function() {

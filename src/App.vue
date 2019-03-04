@@ -2,7 +2,7 @@
   <v-app>
     <Navbar/>
     <v-content>
-      <v-container fill-height>
+      <v-container pa-0 fill-height>
         <v-fade-transition mode="out-in">
           <router-view></router-view>
         </v-fade-transition>
@@ -16,6 +16,10 @@ import Navbar from "@/components/layout/Navbar";
 
 export default {
   name: "App",
+  metaInfo: {
+    title: "みんなのALBUM",
+    titleTemplate: "%s | みんなのALBUM"
+  },
   components: {
     Navbar
   }

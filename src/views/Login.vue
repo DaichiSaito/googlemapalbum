@@ -12,6 +12,12 @@ import Loading from "@/components/Loading.vue";
 
 export default {
   name: "login",
+  metaInfo: {
+    title: "ログイン",
+    meta: [
+      { name: "description", content: "みんなのALBUMのログインページです。" }
+    ]
+  },
 
   components: {
     Loading
