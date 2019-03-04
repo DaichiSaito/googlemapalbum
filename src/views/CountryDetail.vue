@@ -5,8 +5,8 @@
         <v-icon>add</v-icon>
       </v-btn>
     </router-link>
-    <v-flex xs12>
-      <h1 class="text-xs-center" v-if="country">{{country.name_jps}}</h1>
+    <v-flex xs12 pa-3>
+      <h1 class="text-xs-center" v-if="country">{{country.name_jps}}のアルバム</h1>
       <p class="text-xs-center" v-if="feedback">{{feedback}}</p>
     </v-flex>
     <v-flex v-if="filteredImages.length > 0" xs12>
